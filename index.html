@@ -1697,8 +1697,8 @@ class Component extends DCLogic {
 
     let gaps = p.gaps || [];
     if (doc && /unassigned/i.test(doc.owner || '')) gaps = gaps.some(x => x.what.startsWith('No owner')) ? gaps
-      : [...gaps, { where:doc.title + ' · ' + doc.id, what:'No owner and no approver; still v0.1 draft.',
-          patch:'Assign an owner and approver and move it off draft before a technician is told to follow it.' }];
+      : [...gaps, { where:doc.title + ' · ' + doc.id, what:'No owner or approver named yet.',
+          patch:'Name an owner and an approver in your own shop before a technician is told to follow it.' }];
 
     const lines = [];
     if (p.sym) lines.push((p.sym.kind === 'operation' ? 'Trigger: ' : 'Reported: ') + p.sym.q
@@ -2408,11 +2408,11 @@ class Component extends DCLogic {
           { k:noGate + ' open gates', v:'Of ' + dec + ' decision gates, ' + noGate + ' state a condition and no outcome. The document asks a question it does not answer, so the technician is guessing. Walking one surfaces it on the punch list.' },
           { k:cond + ' buried conditionals', v:'Steps carrying an if / unless / when inside the prose rather than as a modelled branch. Each is a decision a technician has to spot for themselves. Splitting them into condition and outcome in the source makes them gates automatically on the next extraction.' },
           { k:noFlow.length + ' documents with no procedure', v:noFlow.length ? noFlow.map(d => d.id).join(', ') + ' hold tables and standards but no numbered steps. GOV-02 is the consequential one: its intake, ticket and redirection tables now drive three stations of the guided path, but they are read as data, not walked as a procedure.' : 'Every document has at least one numbered procedure.' },
-          { k:unowned.length + ' unowned, ' + draft.length + ' in draft', v:'No approver and no version above v0.1 means nothing in the catalogue is yet binding on a technician. This is the one defect the tool cannot route around.' },
+          { k:unowned.length + ' with no named owner', v:'The Known Good edition leaves the owner and approver for your shop to name. Until they are named, nothing in the catalogue is binding on a technician. This is the one gap the tool cannot route around.' },
           { k:noTier.length + ' with no tier', v:noTier.length ? noTier.map(d => d.id).join(', ') + ' state no operating tier, so a ticket opened from them cannot be routed by tier and the Tiers map view cannot place them.' : 'Every document states an operating tier.' }
         ] },
         { title:'WHAT IS LEFT, IN ORDER', color:'#6FD6AE', rows:[
-          { k:'1', v:'Assign an owner and an approver to ' + unowned.length + ' documents and move ' + draft.length + ' off v0.1. Until then the walkthrough is a rehearsal, not an instruction.' },
+          { k:'1', v:'Name an owner and an approver for ' + unowned.length + ' documents in your own shop. Until then the walkthrough is a rehearsal, not an instruction.' },
           { k:'2', v:'Answer the ' + noGate + ' open gates. Each one is a place the path can take a technician to and then stop being useful.' },
           { k:'3', v:'Split the ' + cond + ' buried conditionals into explicit condition and outcome. No tool change needed — the extraction picks them up.' },
           { k:'4', v:'Write GOV-02 as a numbered procedure so intake is a walkable flow rather than three tables the tool reads on its behalf.' },
