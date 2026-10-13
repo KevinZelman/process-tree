@@ -254,7 +254,7 @@ export const SYMPTOMS = [
   { cat:'Privileged & service accounts', q:'I need an admin or privileged account', sop:'ACC-07' },
   { cat:'Privileged & service accounts', q:'I need a service or non-human account for an application', sop:'ACC-08' },
   { cat:'Privileged & service accounts', q:'What is this account allowed to be called?', sop:'ACC-02' },
-  { cat:'Privileged & service accounts', q:'Why does a temporary worker have two accounts?', sop:'ACC-02-BRIEF' },
+  { cat:'Privileged & service accounts', q:'Why does a temporary worker have two accounts?', sop:'ACC-02' },
   { cat:'Privileged & service accounts', q:'We are onboarding a new application — it needs SSO', sop:'ACC-16' },
 
   { cat:'Misuse, review & compliance', q:'Someone is sharing their credentials', sop:'ACC-15' },
