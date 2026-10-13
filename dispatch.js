@@ -275,7 +275,7 @@ export const JOBS = [
        'Declare it. Severity decides who is told and how fast. Declare high if unsure; coming back down is cheap.',
        'Preserve evidence before remediating.'],
     3:['Contain, preserve, then remediate. Check for mailbox rules, forwarding, and OAuth grants added during the window.'],
-    4:['Notification obligations run on severity. A Organization-wide or data-exposure case goes to executive leadership immediately, incomplete information and all.']
+    4:['Notification obligations run on severity. An organization-wide or data-exposure case goes to executive leadership immediately, incomplete information and all.']
   }
 },
 {

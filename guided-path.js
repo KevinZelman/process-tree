@@ -258,7 +258,7 @@ export const SYMPTOMS = [
   { cat:'Privileged & service accounts', q:'We are onboarding a new application — it needs SSO', sop:'ACC-16' },
 
   { cat:'Misuse, review & compliance', q:'Someone is sharing their credentials', sop:'ACC-15' },
-  { cat:'Misuse, review & compliance', q:'I need an account suspended for misuse or academic integrity', sop:'ACC-13' },
+  { cat:'Misuse, review & compliance', q:'I need an account suspended for misuse or a policy breach', sop:'ACC-13' },
   { cat:'Misuse, review & compliance', q:'It is time for the access review / recertification', sop:'ACC-17' },
   { cat:'Misuse, review & compliance', q:'Is this device allowed on the network?', sop:'DEV-02' },
   { cat:'Misuse, review & compliance', q:'The security agent flagged something on a device', sop:'DEV-14' },
@@ -373,13 +373,13 @@ export const INCIDENT_TEST = [
 
 /* VERBATIM — GOV-06, in order. First true line wins. */
 export const PRIORITY_TEST = [
-  ['A Organization-wide system is down, or there is a security incident, suspected compromise or data exposure.', 'P1', 'declare it in the ticket and the tier channel'],
+  ['An organization-wide system is down, or there is a security incident, suspected compromise or data exposure.', 'P1', 'declare it in the ticket and the tier channel'],
   ['A meeting or session is under way right now and cannot proceed.', 'P1', ''],
   ['A legal or regulatory clock is running.', 'P1', 'and tell Tier 4'],
   ['A whole department cannot do its work.', 'P2', ''],
   ['One person is completely blocked and has no workaround.', 'P2', ''],
   ['A room is down and a session is booked in it within 24 hours.', 'P2', ''],
-  ['One person is working but impaired, or a room is down with no class due soon.', 'P3', ''],
+  ['One person is working but impaired, or a room is down with nothing booked in it soon.', 'P3', ''],
   ['It is a standard access or permission request.', 'P3', ''],
   ['Something new is being asked for, or the requester agrees it can wait.', 'P4', 'scheduled by agreement']
 ];
@@ -574,7 +574,7 @@ export const STATION_HELP = {
 
 /* PATCH — glossary. Short definitions for the terms the path uses as shorthand. */
 export const GLOSSARY = {
-  P1:'Organization-wide outage, security incident, a class that cannot go ahead, or a legal deadline running. Acknowledged within 15 minutes.',
+  P1:'Organization-wide outage, security incident, a session that cannot go ahead, or a legal deadline running. Acknowledged within 15 minutes.',
   P2:'A department blocked, or one person blocked with no workaround. Acknowledged within 4 working hours.',
   P3:'Working but impaired, or a standard access request. Acknowledged within 1 working day.',
   P4:'New requests, or anything the requester agrees can wait. Acknowledged within 3 working days.',
