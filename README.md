@@ -1,7 +1,7 @@
 # Known Good Process Tree
 
-**Live app:** https://kevinzelman.github.io/process-tree/
-**Help center:** https://kevinzelman.github.io/process-tree/help.html
+- **Live app:** https://kevinzelman.github.io/process-tree/
+- **Help center:** https://kevinzelman.github.io/process-tree/help.html
 
 A free, interactive reference for running an IT help desk. It maps 64 standard operating procedures onto one question every technician has to answer first: *is this ours?* From there it walks a request all the way to a clean, copy-ready ticket.
 
