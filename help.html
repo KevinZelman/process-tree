@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Known Good Help Center</title>
+<meta name="description" content="Six self-service IT guides: password reset, new phone or MFA, lockouts, phishing, software requests and printing.">
+<meta name="author" content="Kevin Zelman">
+<link rel="canonical" href="https://kevinzelman.github.io/process-tree/help.html">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%230E9F6E'/%3E%3Ccircle cx='32' cy='32' r='13' fill='%23D64545'/%3E%3Cpath d='M32 6v13M32 45v13M6 32h13M45 32h13' stroke='%23fff' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://kevinzelman.github.io/process-tree/help.html">
+<meta property="og:title" content="Known Good Help Center">
+<meta property="og:description" content="Six self-service IT guides: password reset, new phone or MFA, lockouts, phishing, software requests and printing.">
+<meta name="twitter:card" content="summary">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Barlow+Condensed:wght@600;700&display=swap">
+<style>
+/* Layout: a front-door index of six symptom cards, then each guide as a numbered checklist with a "still stuck" hand-off. */
+:root {
+  --bg:#F4F7F5; --surface:#FFFFFF; --ink:#16201C; --muted:#5B6B64; --line:#D3DED8;
+  --accent:#0E9F6E; --accent-ink:#0B7F58; --accent-soft:#E3F3EC; --warn:#B4472F; --warn-soft:#FBEDE8;
+  --display:'Barlow Condensed', 'Arial Narrow', Impact, sans-serif;
+  --body:'Atkinson Hyperlegible', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --mono:ui-monospace, 'Cascadia Mono', Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg:#0D1B16; --surface:#13251F; --ink:#E6F0EB; --muted:#9DB2A8; --line:#24403A;
+  --accent:#3CC891; --accent-ink:#6FD6AE; --accent-soft:#163A2E; --warn:#F08C70; --warn-soft:#3A221C; color-scheme:dark } }
+:root[data-theme="dark"] {
+  --bg:#0D1B16; --surface:#13251F; --ink:#E6F0EB; --muted:#9DB2A8; --line:#24403A;
+  --accent:#3CC891; --accent-ink:#6FD6AE; --accent-soft:#163A2E; --warn:#F08C70; --warn-soft:#3A221C; color-scheme:dark }
+
+* { box-sizing:border-box; }
+body { margin:0; background:var(--bg); color:var(--ink); font-family:var(--body); font-size:17px; line-height:1.6; }
+.wrap { max-width:980px; margin:0 auto; padding-inline:20px; padding-block:28px 64px; }
+a { color:var(--accent-ink); }
+a:focus-visible, button:focus-visible { outline:3px solid var(--accent); outline-offset:2px; border-radius:4px; }
+
+header.top { display:flex; flex-direction:column; gap:10px; padding-bottom:22px; border-bottom:2px solid var(--accent); }
+.brand { font-family:var(--display); font-weight:700; font-size:15px; letter-spacing:.16em; text-transform:uppercase; color:var(--accent-ink); }
+h1 { font-family:var(--display); font-weight:700; font-size:clamp(40px, 7vw, 64px); line-height:.98; letter-spacing:.01em; margin:0; text-transform:uppercase; text-wrap:balance; }
+.lede { margin:0; max-width:62ch; color:var(--muted); font-size:18px; }
+
+.find { margin-top:26px; display:flex; flex-direction:column; gap:6px; }
+.find label { font-family:var(--display); font-size:15px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); }
+.find input { width:100%; font:inherit; font-size:18px; padding:12px 14px; border:2px solid var(--line); border-radius:8px; background:var(--surface); color:var(--ink); }
+.find input:focus { outline:none; border-color:var(--accent); }
+
+.doors { list-style:none; padding:0; margin:18px 0 0; display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:12px; }
+.doors a { display:flex; flex-direction:column; gap:4px; height:100%; padding:16px 18px; background:var(--surface); border:1px solid var(--line); border-radius:10px; text-decoration:none; color:var(--ink); transition:border-color .12s, transform .12s; }
+.doors a:hover { border-color:var(--accent); transform:translateY(-1px); }
+.doors .say { font-weight:700; font-size:18px; line-height:1.3; }
+.doors .meta { font-size:14px; color:var(--muted); }
+.doors .time { font-family:var(--mono); font-size:12.5px; color:var(--accent-ink); font-variant-numeric:tabular-nums; }
+.none { margin-top:14px; color:var(--muted); }
+
+.rule { margin:34px 0 0; padding:16px 18px; background:var(--accent-soft); border-radius:10px; display:grid; gap:4px; }
+.rule strong { font-family:var(--display); font-size:20px; letter-spacing:.04em; text-transform:uppercase; }
+.rule p { margin:0; max-width:70ch; }
+
+article.guide { margin-top:44px; padding-top:26px; border-top:1px solid var(--line); scroll-margin-top:16px; }
+.ghead { display:flex; flex-wrap:wrap; align-items:baseline; justify-content:space-between; gap:8px 16px; }
+.eyebrow { font-family:var(--mono); font-size:12.5px; color:var(--muted); letter-spacing:.04em; }
+article h2 { font-family:var(--display); font-weight:700; font-size:clamp(30px, 4.5vw, 40px); line-height:1.05; text-transform:uppercase; letter-spacing:.01em; margin:2px 0 0; text-wrap:balance; }
+.intro { max-width:65ch; margin:10px 0 0; }
+.copy { font:inherit; font-size:13px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; padding:8px 14px; border-radius:6px; border:1.5px solid var(--accent); background:transparent; color:var(--accent-ink); cursor:pointer; }
+.copy:hover { background:var(--accent-soft); }
+
+ol.steps { list-style:none; counter-reset:s; padding:0; margin:18px 0 0; display:grid; gap:10px; max-width:72ch; }
+ol.steps > li { counter-increment:s; display:grid; grid-template-columns:40px 1fr; gap:12px; align-items:start; }
+ol.steps > li::before { content:counter(s); font-family:var(--display); font-weight:700; font-size:22px; line-height:1; width:36px; height:36px; display:grid; place-items:center; border-radius:50%; background:var(--accent); color:var(--surface); margin-top:2px; }
+ol.steps > li > div { min-width:0; }
+ol.steps b { display:block; }
+.addr { font-family:var(--mono); font-size:15px; background:var(--surface); border:1px solid var(--line); padding:1px 6px; border-radius:4px; white-space:nowrap; }
+
+.stuck { margin-top:18px; max-width:72ch; padding:14px 16px; border-left:4px solid var(--accent); background:var(--surface); border-radius:0 8px 8px 0; }
+.stuck strong { display:block; font-family:var(--display); font-size:18px; letter-spacing:.06em; text-transform:uppercase; }
+.stuck ul { margin:6px 0 0; padding-left:20px; }
+.warn { border-left-color:var(--warn); background:var(--warn-soft); }
+.warn strong { color:var(--warn); }
+
+footer { margin-top:56px; padding-top:18px; border-top:1px solid var(--line); color:var(--muted); font-size:14.5px; display:grid; gap:6px; }
+footer p { margin:0; max-width:75ch; }
+@media (max-width:480px) { body { font-size:16px; } ol.steps > li { grid-template-columns:32px 1fr; } ol.steps > li::before { width:30px; height:30px; font-size:18px; } }
+@media (prefers-reduced-motion:reduce) { * { transition:none !important; } }
+</style>
+</head>
+<body>
+
+
+<div class="wrap">
+<p style="margin:0 0 8px;font-size:14px"><a href="./" style="color:var(--accent-ink)">&larr; Known Good Process Tree</a></p>
+  <header class="top">
+    <div class="brand">Known Good · Front Door</div>
+    <h1>Fix it yourself, in a few minutes</h1>
+    <p class="lede">Six guides for the things people ask the help desk most. Each one is a short checklist. If it doesn't work, the last box tells you exactly what to send so nobody has to ask twice.</p>
+  </header>
+
+  <div class="find">
+    <label for="q">What's going on?</label>
+    <input id="q" type="search" placeholder="Try “password”, “new phone”, “printer”" autocomplete="off">
+  </div>
+  <ul class="doors" id="doors">
+    <li data-k="password forgot expired reset sign in"><a href="#password"><span class="say">I forgot my password, or it expired</span><span class="meta">Reset it yourself, from any device</span><span class="time">about 2 min</span></a></li>
+    <li data-k="mfa authenticator new phone lost phone code prompt"><a href="#newphone"><span class="say">I got a new phone, or the sign-in prompt never arrives</span><span class="meta">Microsoft Authenticator and backup methods</span><span class="time">about 10 min</span></a></li>
+    <li data-k="locked out lockout account locked"><a href="#lockout"><span class="say">My account keeps locking me out</span><span class="meta">What to check before you try again</span><span class="time">about 5 min</span></a></li>
+    <li data-k="phishing suspicious email scam clicked link"><a href="#phishing"><span class="say">An email looks wrong, or I already clicked it</span><span class="meta">Report it in one click</span><span class="time">under 1 min</span></a></li>
+    <li data-k="software app install admin access request"><a href="#software"><span class="say">I need an app, or access to one</span><span class="meta">The catalogue first, then a short request</span><span class="time">2 min to request</span></a></li>
+    <li data-k="printer print printing scan add printer"><a href="#printer"><span class="say">The printer won't print</span><span class="meta">The ten-step ladder, most fixes in step 1</span><span class="time">about 5 min</span></a></li>
+  </ul>
+  <p class="none" id="none" hidden>Nothing matches that. Contact the help desk and describe it in your own words; that is all we need to start.</p>
+
+  <div class="rule">
+    <strong>IT will never ask for your password</strong>
+    <p>Not by email, not on the phone, not in a ticket, and never for a sign-in code. If someone asks, they are not IT. Report it (guide 4).</p>
+  </div>
+
+  <article class="guide" id="password" data-title="Reset your password">
+    <div class="ghead"><div><div class="eyebrow">Guide 1 · from ACC-05</div><h2>Reset your password</h2></div><button class="copy" type="button">Copy steps</button></div>
+    <p class="intro">An expired or forgotten password is common, and it doesn't mean anything is wrong with your account. You can fix it yourself in about two minutes.</p>
+    <ol class="steps">
+      <li><div><b>Go to <span class="addr">aka.ms/sspr</span></b>Use any device, including your phone.</div></li>
+      <li><div><b>Enter your work email address.</b></div></li>
+      <li><div><b>Confirm it's you.</b>Your phone gets a text or a prompt in the Authenticator app. Approve it.</div></li>
+      <li><div><b>Set a new password.</b>Use a short sentence you'll remember rather than a word with symbols swapped in.</div></li>
+      <li><div><b>Sign out and back in on your phone and laptop.</b>Anything still using the old password may keep asking until you do.</div></li>
+    </ol>
+    <div class="stuck"><strong>Still stuck?</strong>Contact the help desk and send:
+      <ul><li>what the reset page said, word for word, or a photo of the screen</li><li>whether the confirmation text or prompt arrived</li></ul>
+    </div>
+  </article>
+
+  <article class="guide" id="newphone" data-title="New phone or missing sign-in prompt">
+    <div class="ghead"><div><div class="eyebrow">Guide 2 · from ACC-03</div><h2>New phone, or no sign-in prompt</h2></div><button class="copy" type="button">Copy steps</button></div>
+    <p class="intro">Your sign-in confirmation goes to whichever phone your account has registered. If that phone is gone, or the app's notifications are off, the prompt never arrives even though your password is right.</p>
+    <ol class="steps">
+      <li><div><b>Still have the old phone? Keep it until the new one works.</b>On a computer, go to <span class="addr">aka.ms/MFAsetup</span>, add the new phone, and only then remove the old one.</div></li>
+      <li><div><b>Old phone lost, wiped or traded in?</b>Contact the help desk. We confirm who you are, then clear the old phone so you can add the new one. Confirming first is what stops someone else claiming to have a new phone.</div></li>
+      <li><div><b>Add Microsoft Authenticator on the new phone.</b>Go to <span class="addr">aka.ms/MFAsetup</span> on a computer and follow the steps on screen.</div></li>
+      <li><div><b>Prompt never arrives on the right phone?</b>Open your phone's settings and turn notifications on for Microsoft Authenticator. A phone update can switch them off without warning.</div></li>
+      <li><div><b>Add a second method while you're there.</b>A phone number is fine. With two methods, a lost phone is an inconvenience you can fix yourself instead of a lockout.</div></li>
+    </ol>
+    <div class="stuck"><strong>Still stuck?</strong>Contact the help desk from a phone or a colleague's computer and tell us:
+      <ul><li>whether you still have the old phone</li><li>what you see when you try to sign in</li></ul>
+    </div>
+  </article>
+
+  <article class="guide" id="lockout" data-title="Account keeps locking">
+    <div class="ghead"><div><div class="eyebrow">Guide 3 · from ACC-05</div><h2>Your account keeps locking</h2></div><button class="copy" type="button">Copy steps</button></div>
+    <p class="intro">An account that locks again after it has been unlocked almost always has an old password saved somewhere that keeps retrying. Finding that is the real fix.</p>
+    <ol class="steps">
+      <li><div><b>Stop trying the password.</b>Every attempt can extend the lock. Contact the help desk instead; unlocking needs a technician.</div></li>
+      <li><div><b>Think about what changed recently.</b>A new password, a new phone, a new laptop. The old password is usually still saved on the device you used before.</div></li>
+      <li><div><b>Check your phone's mail app.</b>It is the most common culprit. Remove the work account and add it again with the new password.</div></li>
+      <li><div><b>Check other places that remember passwords.</b>A tablet, a second laptop, a mapped drive, or a saved Wi-Fi connection.</div></li>
+      <li><div><b>Sign out and back in everywhere.</b>Do it once your account is unlocked, so every device picks up the current password.</div></li>
+    </ol>
+    <div class="stuck warn"><strong>Think someone else is signing in?</strong>Don't reset your password yourself. Contact the help desk straight away and say so. A reset alone doesn't end a session that is already open, and the order of the fix matters.</div>
+  </article>
+
+  <article class="guide" id="phishing" data-title="Report a suspicious email">
+    <div class="ghead"><div><div class="eyebrow">Guide 4 · from M365-22</div><h2>Report a suspicious email</h2></div><button class="copy" type="button">Copy steps</button></div>
+    <p class="intro">If a message looks wrong, reporting it takes one click and sends us everything we need. Nobody has ever been made to feel silly for asking.</p>
+    <ol class="steps">
+      <li><div><b>Use the Report button in Outlook.</b>Choose Report, then Phishing. Please don't forward it to IT: a forward loses the technical detail and puts another copy in a mailbox.</div></li>
+      <li><div><b>Not sure? Report it anyway.</b>It takes us two minutes to check.</div></li>
+      <li><div><b>Don't warn colleagues by forwarding it.</b>It spreads the message. Tell us and we'll tell everyone at once.</div></li>
+      <li><div><b>Already clicked, or typed your password?</b>Tell the help desk straight away. You will not be in trouble, and what we can fix in ten minutes is much harder to fix the next day.</div></li>
+    </ol>
+    <div class="stuck"><strong>If you clicked, tell us</strong>
+      <ul><li>what you entered: nothing, your username, your password, or a code</li><li>roughly when</li></ul>
+    </div>
+  </article>
+
+  <article class="guide" id="software" data-title="Request an app or access">
+    <div class="ghead"><div><div class="eyebrow">Guide 5 · from DEV-11</div><h2>Request an app or access</h2></div><button class="copy" type="button">Copy steps</button></div>
+    <p class="intro">Approved apps install themselves in a few clicks. New ones go through a short request so the right person can say yes, because free software usually means your data is the price.</p>
+    <ol class="steps">
+      <li><div><b>Check the software catalogue first.</b>On a work Windows computer, open <b>Company Portal</b> from the Start menu. On a Mac, open Self Service if your organization uses it. If the app is there, install it. You're done.</div></li>
+      <li><div><b>Can sign in but one app refuses you?</b>That's a permission, not your password. Ask the help desk, name the app and send the exact error message.</div></li>
+      <li><div><b>Need something new? Send a request with:</b>the exact product and version, what it's for in one sentence, who will use it, whether it touches personal, payroll or HR data, where that data goes, the cost and who pays, and the date you need it.</div></li>
+      <li><div><b>Asked for an admin password while installing?</b>Stop there and contact the help desk. We install it for you properly instead of handing out admin rights.</div></li>
+      <li><div><b>Once it's granted, sign out fully and back in.</b>Access is read at sign-in, so it won't appear until you do.</div></li>
+    </ol>
+    <div class="stuck"><strong>What happens next</strong>We tell you whether the app is approved and when it will arrive. If you stop needing it, tell us: a seat nobody uses is still a seat somebody pays for.</div>
+  </article>
+
+  <article class="guide" id="printer" data-title="Printer won't print">
+    <div class="ghead"><div><div class="eyebrow">Guide 6 · from DEV-17</div><h2>The printer won't print</h2></div><button class="copy" type="button">Copy steps</button></div>
+    <p class="intro">Printers fail in a few predictable ways. Work down the list in order and stop as soon as it prints.</p>
+    <ol class="steps">
+      <li><div><b>Look at the printer's own screen.</b>Nine times out of ten it's telling you: out of paper, a door open, a tray not pushed in, toner low, a jam. Fix what it says and try again.</div></li>
+      <li><div><b>Check you're printing to the printer next to you.</b>Compare the name in the print window with the sticker on the machine. A missing job very often printed perfectly on another floor.</div></li>
+      <li><div><b>Secure-release printer?</b>Nothing comes out until you tap your card or enter your PIN at the machine.</div></li>
+      <li><div><b>Clear your print queue, then print once.</b>Delete any stuck job and print a single copy. Printing four more times is how six copies appear an hour later.</div></li>
+      <li><div><b>Turn the printer off, wait ten seconds, turn it on.</b>Give it a minute to come back.</div></li>
+      <li><div><b>Restart your computer.</b>It genuinely fixes the print service when it's stuck.</div></li>
+      <li><div><b>Ask the person next to you to print.</b>If nobody can, it's the printer, and we want to know now. If it's only you, keep going.</div></li>
+      <li><div><b>Print something else.</b>If that works, it's the document. Save it as a PDF and print that.</div></li>
+      <li><div><b>Remove the printer and add it back.</b>Windows: Settings → Bluetooth &amp; devices → Printers &amp; scanners → Add device. Mac: System Settings → Printers &amp; Scanners → Add Printer. Print a test page straight away.</div></li>
+      <li><div><b>Small printer on your desk?</b>Check both ends of the cable and the power, then try another cable.</div></li>
+    </ol>
+    <div class="stuck"><strong>Still stuck?</strong>Contact the help desk and send:
+      <ul><li>the printer name from the sticker, and where it is</li><li>any message on its screen</li><li>whether anyone else can print to it</li></ul>
+    </div>
+  </article>
+
+  <footer>
+    <p><b>For help desks:</b> these guides come from the Known Good SOP catalogue and work for any Microsoft 365 workplace. Copy them into your own knowledge base and change the links, the catalogue name and the contact route to match your shop.</p>
+    <p>Known Good · the help desk mentoring community, by Kevin Zelman.</p>
+  </footer>
+</div>
+
+<script>
+(() => {
+  const q = document.getElementById('q');
+  const items = [...document.querySelectorAll('#doors li')];
+  const none = document.getElementById('none');
+  q.addEventListener('input', () => {
+    const v = q.value.trim().toLowerCase();
+    let shown = 0;
+    items.forEach(li => {
+      const hit = !v || (li.dataset.k + ' ' + li.textContent).toLowerCase().includes(v);
+      li.hidden = !hit; if (hit) shown++;
+    });
+    none.hidden = shown > 0;
+  });
+  document.querySelectorAll('article.guide').forEach(a => {
+    const btn = a.querySelector('.copy');
+    btn.addEventListener('click', () => {
+      const steps = [...a.querySelectorAll('ol.steps > li')].map((li, i) => (i + 1) + '. ' + li.innerText.replace(/\s*\n\s*/g, ' ').trim());
+      const stuck = a.querySelector('.stuck');
+      const text = a.dataset.title + '\n\n' + steps.join('\n') + (stuck ? '\n\n' + stuck.innerText.replace(/\n+/g, '\n').trim() : '');
+      const done = () => { btn.textContent = 'Copied'; setTimeout(() => { btn.textContent = 'Copy steps'; }, 1600); };
+      const fallback = () => {
+        const ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta); ta.select();
+        try { document.execCommand('copy'); done(); } catch (e) { btn.textContent = 'Select and copy'; }
+        ta.remove();
+      };
+      try { navigator.clipboard.writeText(text).then(done, fallback); } catch (e) { fallback(); }
+    });
+  });
+})();
+</script>
+
+</body>
+</html>
