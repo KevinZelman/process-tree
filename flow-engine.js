@@ -89,12 +89,15 @@ export function layoutFlow(doc, flow, startY = 0) {
     const h = nodeH(s.label, s.type === 'decision');
     const n = push({ key: s.sec, type: s.type, sec: s.sec, x: X, y, w: NW, h,
       label: s.label, step: s, doc: doc.id, role: s.role, warn: s.warn, refs: s.refs });
-    edges.push({ from: prev.key, to: n.key, kind: prev.type === 'decision' ? 'no' : 'seq',
-      label: prev.type === 'decision' ? 'No' : '',
+    const branched = prev.type === 'decision' || !!(prev.step && prev.step.gate);
+    edges.push({ from: prev.key, to: n.key, kind: branched ? 'no' : 'seq',
+      label: branched ? 'No' : '',
       path: elbow(prev.x + NW / 2, prev.y + prev.h, n.x + NW / 2, n.y) });
 
+    let rowH = h;
     if (s.gate) {
       const bh = nodeH(s.gate.then, false);
+      rowH = Math.max(h, bh + 6);
       const b = push({ key: s.sec + 'y', type: s.refs.length ? 'subprocess' : 'branch',
         sec: s.sec + ' \u00b7 yes', x: X + BRANCH_DX, y: y + 6, w: NW - 24, h: bh,
         label: s.gate.then, step: s, doc: doc.id, role: s.role, refs: s.refs, branch: true });
@@ -102,7 +105,7 @@ export function layoutFlow(doc, flow, startY = 0) {
         path: elbow(n.x + NW, n.y + h / 2, b.x, b.y + bh / 2, true) });
       maxX = Math.max(maxX, X + BRANCH_DX + NW - 24);
     }
-    y += h + GAPY;
+    y += rowH + GAPY;
     if (band) band.y1 = y - GAPY + 10;
     prev = n;
   });

@@ -1003,7 +1003,7 @@
           <div style="position:absolute;left:0;top:0;transform-origin:0 0" ref="{{ flowStageRef }}">
             <sc-for list="{{ cols }}" as="col" hint-placeholder-count="3">
               <div style="position:absolute;left:{{ col.left }}px;top:0;width:{{ col.w }}px">
-                <div style="font-family:'Barlow Condensed',Impact,sans-serif;font-size:21px;letter-spacing:.08em;color:#F2C14E;border-bottom:1px solid rgba(242,193,78,.4);padding-bottom:5px;margin-bottom:4px">{{ col.name }}</div>
+                <div style="font-family:'Barlow Condensed',Impact,sans-serif;font-size:21px;letter-spacing:.08em;color:#F2C14E;border-bottom:1px solid rgba(242,193,78,.4);padding-bottom:5px;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="{{ col.name }}">{{ col.name }}</div>
               </div>
               <svg width="{{ totalW }}" height="{{ col.h }}" style="position:absolute;left:0;top:{{ col.top }}px;overflow:visible;pointer-events:none">
                 <sc-for list="{{ col.edges }}" as="e" hint-placeholder-count="14">
@@ -1076,6 +1076,19 @@
                     <span style="flex:0 0 14px;color:#D64545;font-size:13px">☐</span>
                     <span style="flex:1 1 auto;font-size:12px;line-height:1.45">{{ ev.step }}</span>
                     <span style="flex:0 0 96px;font-size:10px;line-height:1.45;color:#5B6B64;text-align:right">{{ ev.evidence }}</span>
+                  </div>
+                </sc-for>
+              </sc-if>
+
+              <sc-if value="{{ sel.hasForms }}" hint-placeholder-val="{{ false }}">
+                <div style="font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:#0E9F6E;margin:20px 0 6px;border-bottom:1px solid #B2B4B2;padding-bottom:4px">The form this step calls for</div>
+                <sc-for list="{{ sel.forms }}" as="fm" hint-placeholder-count="1">
+                  <div style="background:#fff;border:1px solid #DCE5E0;border-left:4px solid #0E9F6E;padding:10px 12px;margin-bottom:9px">
+                    <div style="font-weight:700;font-size:12px;margin-bottom:6px">{{ fm.head }}</div>
+                    <sc-for list="{{ fm.rows }}" as="fr" hint-placeholder-count="3">
+                      <div style="font-size:11.5px;line-height:1.45;padding:4px 0;border-top:1px solid #EEF2F0">{{ fr.t }}</div>
+                    </sc-for>
+                    <div style="font-size:10px;color:#5B6B64;margin-top:4px">{{ fm.more }}</div>
                   </div>
                 </sc-for>
               </sc-if>
@@ -1393,7 +1406,7 @@ class Component extends DCLogic {
                 if (x.desk) return this.setPath({ sym:x, sop:null, at:7, gaps,
                   ours:'Redirect → ' + x.desk, oursAuto:true, outcome:GP.OUTCOMES[1],
                   ticket:'Ticket raised, then redirected', ticketState:'raise' });
-                if (d && !d.flows.length) gaps = this.addGap(d.title + ' · ' + d.id,
+                if (d && !d.flows.length && d.kind !== 'standard') gaps = this.addGap(d.title + ' · ' + d.id,
                   'No numbered procedure. The document is a standard, so the path has nothing to step through.',
                   'Write the procedure as numbered steps, or point this entry at a document that has one.');
                 const inf = x.kind === 'operation' ? GP.inferOps(x, d, x.origin) : GP.infer(x, d);
@@ -1596,8 +1609,10 @@ class Component extends DCLogic {
             onClick:() => this.setPath({ cause:r[1], causeKey:r[2] || '', step:0 }) }));
         } else if (!doc || !doc.flows.length) {
           c.src = doc ? doc.id : 'The catalogue'; c.srcDoc = doc ? doc.id : null;
-          c.question = doc ? doc.title + ' has no procedure.' : 'Nothing to run.';
-          c.hint = 'This is a standard, not a runbook. The path cannot step you through it — that is the gap, logged below.';
+          const isStd = doc && doc.kind === 'standard';
+          c.question = !doc ? 'Nothing to run.' : isStd ? doc.title + ' is a reference standard.' : doc.title + ' has no procedure.';
+          c.hint = isStd ? 'It sets the rules rather than steps. Read the part that answers the request, apply it, and close.'
+            : 'This is a standard, not a runbook. The path cannot step you through it — that is the gap, logged below.';
           c.options = [{ label:'Read it on the map instead', note:'', tag:'', ...DIM,
             onClick:() => { this.setState({ p:{ ...p, open:false } }); this.openDocById(p.sop); } },
             { label:'Continue to close', note:'', tag:'', ...GO, onClick:go(7) }];
@@ -1630,7 +1645,7 @@ class Component extends DCLogic {
           c.stepTitle = doc.title + ' — step ' + s.sec;
           c.stepText = this.resolveRefs(s.text, doc.id); c.stepType = ty.label; c.stepAccent = ty.bg; c.stepFg = ty.fg;
           c.stepTone = TONE[s.type] || 'neutral';
-          c.stepRole = s.role; c.stepRefs = s.refs || [];
+          c.stepRole = s.role; c.stepRefs = s.refs || []; c.stepForms = s.forms || [];
           c.src = 'Step ' + s.sec + ' of this procedure'; c.srcDoc = doc.id;
           c.stepMeta = 'Step ' + ((p.step || 0) + 1) + ' of ' + steps.length
             + ' · ' + f.name + (scoped ? ' · ' + scoped : '');
@@ -1775,6 +1790,11 @@ class Component extends DCLogic {
       title:(g.byId[r] || {}).title || r, sub:r + ' — walk it without losing your place',
       bg:'#12302A', accent:'#6FD6AE', cursor:'pointer',
       onClick:() => this.setPath({ sop:r, flowIdx:0, step:0, known:undefined, at:6 }) })) });
+    const stepForms = (nowCard.hasStep && nowCard.stepForms) || [];
+    if (stepForms.length) shelf.push({ group:'This step calls for', items:stepForms.map(h => {
+      const a = ((doc && doc.appendices) || []).find(x => x.head === h) || { rows:[] };
+      return { title:h, sub:(a.rows || []).length + ((a.rows || []).length === 1 ? ' row' : ' rows') + ' — open the step on the map to see it in full',
+        bg:'#0B231C', accent:'#A8D5BA', cursor:'default', onClick:() => {} }; }) });
 
     const gl = [];
     const term = (k) => { if (k && GP.GLOSSARY[k] && !gl.some(x => x.term === k)) gl.push({ term:k, def:GP.GLOSSARY[k] }); };
@@ -2316,13 +2336,23 @@ class Component extends DCLogic {
 
   buildGaps(g) {
     const GP = this.state.GP;
-    let noGate = 0, cond = 0, dec = 0, gated = 0;
+    // A gate is any step that branches: a decision, or a step whose prose
+    // carried a condition that is now modelled as one. Prose conditionals that
+    // were read and found to be wording (a time, a place, an explanation) are
+    // marked plain in the data and counted as reviewed.
+    let noGate = 0, cond = 0, dec = 0, gated = 0, proseGated = 0, plain = 0, forms = 0;
     g.docs.forEach(d => d.flows.forEach(f => f.steps.forEach(s => {
+      if (s.forms && s.forms.length) forms++;
       if (s.type === 'decision') { dec++; s.gate ? gated++ : noGate++; }
+      else if (s.gate) { dec++; gated++; proseGated++; }
+      else if (s.plain) plain++;
       else if (/\b(if|unless|where|when|in the event|should the)\b/i.test(s.text)) cond++;
     })));
-    const noFlow = g.docs.filter(d => !d.flows.length);
+    const condSeen = proseGated + plain + cond;
+    const standards = g.docs.filter(d => d.kind === 'standard');
+    const noFlow = g.docs.filter(d => !d.flows.length && d.kind !== 'standard');
     const noTier = g.docs.filter(d => !d.tier);
+    const tierFromRouting = g.docs.filter(d => /does not state a tier/i.test(d.tierText || ''));
     const draft = g.docs.filter(d => /draft/i.test(d.version || ''));
     const unowned = g.docs.filter(d => /unassigned/i.test(d.owner || '') || !d.owner);
 
@@ -2341,7 +2371,8 @@ class Component extends DCLogic {
     const missDocs = g.docs.filter(d => !entry.has(d.id));
     const reachFlows = reachDocs.reduce((a, d) => a + d.flows.length, 0);
     const reachSteps = reachDocs.reduce((a, d) => a + d.stepCount, 0);
-    const deadEnds = reachDocs.filter(d => !d.flows.length);
+    const deadEnds = reachDocs.filter(d => !d.flows.length && d.kind !== 'standard');
+    const reachStandards = reachDocs.filter(d => d.kind === 'standard');
     const pct = n => Math.round(n * 100) + '%';
 
     const obligations = [
@@ -2365,11 +2396,12 @@ class Component extends DCLogic {
       ['The do-not-action list', 'When to stop and decline, however urgent it sounds', 'Shown on the Verify station', 'ACC-06', !!(GP && GP.DO_NOT_ACTION)],
       ['Lockout cause before action', 'Confirm cause A to E before touching anything', 'Scopes the procedure to the cause', 'ACC-05', !!(GP && GP.LOCKOUT_CARD)],
       ['Work nobody reported', 'Alerts, feeds, schedules and planned change', 'Origin station and origin-aware Ticket step', 'GOV-02', true],
-      ['Catalogue change intake', 'How the documents themselves get amended', 'Not modelled — document lifecycle, not ticket flow', 'GOV-01', false],
-      ['Emergency change and windows', 'Planned and emergency change control', 'Reachable as a procedure, not as a gate', 'GOV-04', false],
-      ['Forms register', 'Forms attached to the steps that require them', 'Not wired — counts live in a separate file', null, false]
+      ['Catalogue change intake', 'How the documents themselves get amended', 'Walked as a procedure — document lifecycle, not ticket flow', 'GOV-01', !!(g.byId['GOV-01'] && g.byId['GOV-01'].flows.length)],
+      ['Emergency change and windows', 'Planned and emergency change control', 'Walked as a procedure, with the approval chain as a gate', 'GOV-04', !!(g.byId['GOV-04'] && g.byId['GOV-04'].flows.length)],
+      ['Forms register', 'Forms and cards attached to the steps that call for them', 'Shown on the step, ' + forms + ' steps', 'each document’s appendices', forms > 0]
     ];
     const met = obligations.filter(o => o[4]).length;
+    const ok = '#0E9F6E', okFg = '#fff';
 
     return {
       stats: [
@@ -2377,11 +2409,11 @@ class Component extends DCLogic {
         { n:syms.length + ' + ' + ops.length, label:'Request symptoms + operations triggers', bg:'#0E9F6E', color:'#fff' },
         { n:reachFlows + '/' + g.counts.flows, label:'Procedures reachable', bg:'#0E9F6E', color:'#fff' },
         { n:reachSteps + '/' + g.counts.steps, label:'Steps reachable', bg:'#12302A', color:'#F2C14E' },
-        { n:met + '/' + obligations.length, label:'Source obligations implemented', bg:'#36573B', color:'#A8D5BA' },
+        { n:met + '/' + obligations.length, label:'Source obligations implemented', bg:met === obligations.length ? ok : '#36573B', color:met === obligations.length ? okFg : '#A8D5BA' },
         { n:gated + '/' + dec, label:'Decision gates with an outcome', bg:'#12302A', color:'#F2C14E' },
-        { n:noGate, label:'Gates that ask and do not answer', bg:'#8E2B2B', color:'#fff' },
-        { n:cond, label:'Conditionals buried in prose', bg:'#8E2B2B', color:'#fff' },
-        { n:unowned.length, label:'Documents with no owner', bg:'#8E2B2B', color:'#fff' }
+        { n:noGate, label:'Gates that ask and do not answer', bg:noGate ? '#8E2B2B' : '#12302A', color:noGate ? '#fff' : '#6FD6AE' },
+        { n:(condSeen - cond) + '/' + condSeen, label:'Conditionals in prose reviewed', bg:cond ? '#8E2B2B' : '#12302A', color:cond ? '#fff' : '#6FD6AE' },
+        { n:unowned.length, label:'Owners for your shop to name', bg:'#3A3218', color:'#F2C14E' }
       ],
       sections: [
         { title:'REACHABILITY — CAN THE PATH GET THERE AT ALL', color:'#A8D5BA', rows:[
@@ -2397,28 +2429,27 @@ class Component extends DCLogic {
           { k:pct(reachFlows / g.counts.flows) + ' of procedures',
             v:reachFlows + ' of ' + g.counts.flows + ' procedures can be opened. Every procedure inside a reachable document is selectable at the Resolve station, not just the one the symptom points at.' },
           { k:'Dead ends',
-            v:deadEnds.length ? deadEnds.length + ' indexed symptoms land on a document with no numbered procedure (' + deadEnds.map(d => d.id).join(', ') + '). The path can show the document but cannot step through it.' : 'Every indexed symptom lands on a document that has at least one numbered procedure.' },
+            v:deadEnds.length ? deadEnds.length + ' indexed symptoms land on a document with no numbered procedure (' + deadEnds.map(d => d.id).join(', ') + '). The path can show the document but cannot step through it.'
+              : 'None. Every indexed entry lands on a document with a numbered procedure' + (reachStandards.length ? ', or on one of the ' + reachStandards.length + ' reference standards (' + reachStandards.map(d => d.id).join(', ') + '), which set rules rather than steps and open to be read.' : '.') },
           { k:'References', v:'All ' + g.counts.links + ' cross-references resolve to a document that exists. No dangling links.' },
-          { k:'Intake channel', v:'Not recorded. Zero of ' + g.counts.docs + ' documents state how a request reaches the desk — not one says whether it arrives by portal, phone, email or walk-up. The map\u2019s spokes are therefore origin classes from the curated index, not channels read out of the catalogue. Until the ticketing system records the channel, the organization cannot say which route drives its volume, and cannot tell whether a self-service push worked.' }
         ] },
         { title:'SOURCE OBLIGATIONS — IS EVERY MANDATORY GATE ENFORCED', color:'#F2C14E',
           rows:obligations.map(o => ({ k:(o[4] ? '✓ ' : '· ') + o[0],
         v:o[1] + ' — ' + o[2] + (o[3] ? '.  Written in ' + o[3] + '.' : '.') })) },
-        { title:'DEFECTS IN THE SOURCE DOCUMENTS', color:'#D64545', rows:[
-          { k:noGate + ' open gates', v:'Of ' + dec + ' decision gates, ' + noGate + ' state a condition and no outcome. The document asks a question it does not answer, so the technician is guessing. Walking one surfaces it on the punch list.' },
-          { k:cond + ' buried conditionals', v:'Steps carrying an if / unless / when inside the prose rather than as a modelled branch. Each is a decision a technician has to spot for themselves. Splitting them into condition and outcome in the source makes them gates automatically on the next extraction.' },
-          { k:noFlow.length + ' documents with no procedure', v:noFlow.length ? noFlow.map(d => d.id).join(', ') + ' hold tables and standards but no numbered steps. GOV-02 is the consequential one: its intake, ticket and redirection tables now drive three stations of the guided path, but they are read as data, not walked as a procedure.' : 'Every document has at least one numbered procedure.' },
-          { k:unowned.length + ' with no named owner', v:'The Known Good edition leaves the owner and approver for your shop to name. Until they are named, nothing in the catalogue is binding on a technician. This is the one gap the tool cannot route around.' },
-          { k:noTier.length + ' with no tier', v:noTier.length ? noTier.map(d => d.id).join(', ') + ' state no operating tier, so a ticket opened from them cannot be routed by tier and the Tiers map view cannot place them.' : 'Every document states an operating tier.' }
+        { title:'THE SOURCE DOCUMENTS — QUALITY CHECKS', color:(noGate || cond || noFlow.length || noTier.length) ? '#D64545' : '#6FD6AE', rows:[
+          { k:(noGate ? '' : '✓ ') + noGate + ' open gates', v:'Of ' + dec + ' gates, ' + noGate + ' state a condition and no outcome.' + (noGate ? ' The document asks a question it does not answer, so the technician is guessing. Walking one surfaces it on the punch list.' : ' Every question a procedure asks has a stated answer.') },
+          { k:(cond ? '' : '✓ ') + condSeen + ' prose conditionals read', v:'Every step whose prose carries an if, unless, where or when was read. ' + proseGated + ' are real branches and are now gates with the outcome the step states. ' + plain + ' are wording — a time, a place or an explanation — rather than a branch.' + (cond ? ' ' + cond + ' are still to be read.' : '') },
+          { k:(noFlow.length ? '' : '✓ ') + 'Procedures', v:noFlow.length ? noFlow.map(d => d.id).join(', ') + ' set out work but have no numbered steps yet.'
+            : 'Every document that sets out work has a numbered procedure. GOV-02 is walked as its intake procedure, assembled from §3–§8 in its own words.' + (standards.length ? ' ' + standards.map(d => d.id).join(', ') + ' are reference standards: they set rules rather than steps.' : '') },
+          { k:(noTier.length ? '' : '✓ ') + 'Operating tier', v:noTier.length ? noTier.map(d => d.id).join(', ') + ' state no operating tier, so a ticket opened from them cannot be routed by tier and the Tiers map view cannot place them.'
+            : 'Every document has an operating tier.' + (tierFromRouting.length ? ' ' + tierFromRouting.map(d => d.id).join(' and ') + ' do not state one in the text; theirs follows the catalogue’s own routing, and the document page says so.' : '') },
+          { k:(forms ? '✓ ' : '') + 'Forms', v:forms + ' steps that call for an appendix form, card or checklist show it on the step.' }
         ] },
-        { title:'WHAT IS LEFT, IN ORDER', color:'#6FD6AE', rows:[
-          { k:'1', v:'Name an owner and an approver for ' + unowned.length + ' documents in your own shop. Until then the walkthrough is a rehearsal, not an instruction.' },
-          { k:'2', v:'Answer the ' + noGate + ' open gates. Each one is a place the path can take a technician to and then stop being useful.' },
-          { k:'3', v:'Split the ' + cond + ' buried conditionals into explicit condition and outcome. No tool change needed — the extraction picks them up.' },
-          { k:'4', v:'Write GOV-02 as a numbered procedure so intake is a walkable flow rather than three tables the tool reads on its behalf.' },
-          { k:'5', v:'Attach the forms register to the steps that require a form. The counts exist in dept.json but are not joined to any step.' },
-          { k:'5b', v:'The notice ladder is shown to the technician but nothing counts the clock. Wiring it to real ticket timestamps is a ticketing-system job, not a document one.' },
-          { k:'6', v:'Review the ' + syms.length + ' request phrases and ' + ops.length + ' operations triggers against a month of real tickets and a quarter of scheduled work. Both indexes are authored, not sourced — what your desk actually hears and actually schedules is the only real test of them.' }
+        { title:'YOURS TO SET — WHAT ONLY YOUR SHOP CAN DECIDE', color:'#F2C14E', rows:[
+          { k:'Owners', v:'The Known Good edition leaves the owner and approver of all ' + unowned.length + ' documents for your shop to name, because no template can name them for you. Until they are named, the walkthrough is a rehearsal rather than an instruction.' },
+          { k:'Intake channel', v:'None of the ' + g.counts.docs + ' documents says whether a request arrives by portal, phone, email or walk-up, so the map’s spokes are origin classes rather than channels. Record the channel in your ticketing system and you will see which route drives your volume, and whether a self-service push worked.' },
+          { k:'The clock', v:'The notice ladder is shown to the technician at acknowledgement. Counting it against real ticket timestamps is a job for your ticketing system.' },
+          { k:'Your own words', v:'The ' + syms.length + ' request phrases and ' + ops.length + ' operations triggers are written to be universal. Check them against a month of your own tickets and a quarter of your scheduled work, and add the phrases your desk actually hears.' }
         ] }
       ]
     };
@@ -2608,7 +2639,7 @@ class Component extends DCLogic {
           const ty = TYPE[n.type] || TYPE.process;
           const ref = (n.refs || [])[0];
           return { left:n.x, top:n.y + 34, w:n.w, h:n.h, sec:n.sec || '·',
-            role:n.role, label:n.label, ...ty,
+            role:n.role, ...ty, label:n.label,
             weight:ty.weight, refLabel:ref || '',
             shadow:n.warn ? 'inset 3px 0 0 #D64545' : 'none',
             onClick:() => this.setState({ selKey:doc.id + '|' + c.num + '|' + n.key }) };
@@ -2655,6 +2686,14 @@ class Component extends DCLogic {
           refs:(s.refs || []).map(r => ({ id:((g.byId[r] || {}).title || r) + ' · ' + r,
             onClick:() => this.openDocById(r) })),
           hasEvidence:ev.length > 0, evidence:ev,
+          hasForms:(s.forms || []).length > 0,
+          forms:(s.forms || []).map(h => {
+            const a = (doc.appendices || []).find(x => x.head === h) || { rows:[] };
+            const rows = (a.rows || []).map(r => r.filter(c => c && c !== '☐').join(' — '))
+              .filter(Boolean).map(t => this.resolveRefs(t, doc.id));
+            return { head:h, rows:rows.slice(0, 8).map(t => ({ t })),
+              more:rows.length > 8 ? '+ ' + (rows.length - 8) + ' more rows in ' + doc.id : '' };
+          }),
           hasCallouts:co.length > 0, callouts:co, control:ctl };
       }
     }
